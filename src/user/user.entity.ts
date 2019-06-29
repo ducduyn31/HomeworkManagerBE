@@ -1,17 +1,37 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { DatabaseEntity } from '../helpers/miscellaneous/database-entity';
 
-@Entity()
-export class User {
+@Entity({ name: 'user' })
+export class User extends DatabaseEntity {
+  constructor(data?: any) {
+    super(data, [
+      'displayName',
+      'email',
+      'dateOfBirth',
+      'phone',
+      'gender',
+      'avatar',
+    ]);
+  }
 
   @PrimaryGeneratedColumn()
-  id: number;
+  id?: number;
 
-  @Column()
-  username: string;
+  @Column({ name: 'display_name', length: 50, nullable: false })
+  displayName: string;
 
-  @Column()
+  @Column({ name: 'email', length: 50, nullable: false })
   email: string;
 
-  @Column({name: 'password'})
-  hshPassword: string;
+  @Column({ name: 'dob', type: 'timestamp' })
+  dateOfBirth: Date;
+
+  @Column({ name: 'phone', length: 20, nullable: true })
+  phone: string;
+
+  @Column({ name: 'gender', default: 'unknown' })
+  gender: string;
+
+  @Column({ name: 'avatar', nullable: true })
+  avatar: string;
 }
