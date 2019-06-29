@@ -1,10 +1,21 @@
 import { Column, Entity, JoinColumn, OneToOne, PrimaryColumn } from 'typeorm';
 import { User } from '../user/user.entity';
+import { DatabaseEntity } from '../helpers/miscellaneous/database-entity';
 
-@Entity({ name: 'user_auth' })
-export class UserAuth {
+export const DBName = 'user_auth';
+
+@Entity({ name: DBName })
+export class UserAuth extends DatabaseEntity {
+  constructor(data?: any) {
+    super(data, [
+      'username',
+    ], [
+      'hashPassword',
+    ]);
+  }
+
   @PrimaryColumn({ name: 'user_id' })
-  id: number;
+  id?: number;
 
   @Column({ unique: true })
   username: string;
@@ -14,5 +25,5 @@ export class UserAuth {
 
   @OneToOne(type => User)
   @JoinColumn({ name: 'user_id' })
-  user: User;
+  user?: User;
 }

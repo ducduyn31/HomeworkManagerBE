@@ -15,9 +15,13 @@ export class UserService {
     return this.userRepository.find();
   }
 
+  initUser(createUserDto: CreateUserDto): User {
+    return new User({ ...createUserDto, dateOfBirth: createUserDto.dob });
+  }
+
   async createNew(createUserDto: CreateUserDto): Promise<User> {
     return await this.userRepository.save(
-      new User({ ...createUserDto, dateOfBirth: createUserDto.dob }),
+      this.initUser(createUserDto),
     );
   }
 }
