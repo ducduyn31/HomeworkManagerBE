@@ -6,7 +6,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserAuth } from './auth.entity';
 import { UserModule } from '../user/user.module';
 import { UserService } from '../user/user.service';
-import { ConfigService } from '../config/config.service';
 import { ConfigModule } from '../config/config.module';
 import { AuthController } from './auth.controller';
 
@@ -16,7 +15,7 @@ import { AuthController } from './auth.controller';
     ConfigModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.register({
-      secretOrPrivateKey: this.jwtKey,
+      secret: ConfigModule.getInstance().jwtKey,
       signOptions: {
         expiresIn: 3600,
       },
@@ -27,8 +26,4 @@ import { AuthController } from './auth.controller';
   controllers: [AuthController],
 })
 export class AuthModule {
-
-  private readonly jwtKey = this.configService.jwtKey;
-
-  constructor(private readonly configService: ConfigService) {}
 }

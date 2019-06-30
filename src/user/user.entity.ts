@@ -1,9 +1,9 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { DatabaseEntity } from '../helpers/miscellaneous/database-entity';
 
-export const DBName = 'user';
+export const TableName = 'user';
 
-@Entity({ name: DBName })
+@Entity({ name: TableName })
 export class User extends DatabaseEntity {
   constructor(data?: any) {
     super(data, [

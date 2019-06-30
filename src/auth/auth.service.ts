@@ -1,7 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../user/user.service';
-import { JwtPayload } from '../helpers/interfaces/jwt-payload.interface';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   EntityManager,
@@ -12,8 +11,10 @@ import {
 import { UserAuth } from './auth.entity';
 import { User } from '../user/user.entity';
 import { IUserAuth } from '../helpers/interfaces/user-detail.interface';
-import { RegisterDto } from './register.dto';
-import { hashSync } from 'bcrypt';
+import { RegisterDto } from './dtos/register.dto';
+import { compareSync, hashSync } from 'bcrypt';
+import { LoginDto } from './dtos/login.dto';
+import { JwtPayload } from '../helpers/interfaces/jwt-payload.interface';
 
 @Injectable()
 export class AuthService {
@@ -32,8 +33,18 @@ export class AuthService {
     };
   }
 
-  async validateUser(payload: JwtPayload): Promise<any> {
-    return null;
+  async validateUser(loginDto: LoginDto): Promise<any> {
+    const auth: UserAuth = await this.authRepo.findOneOrFail({
+      username: loginDto.username,
+    });
+
+    if (!compareSync(loginDto.password, auth.hashPassword)) {
+      throw new UnauthorizedException();
+    }
+
+    const payload: JwtPayload = { id: auth.id, username: auth.username };
+
+    return this.jwtService.sign(payload);
   }
 
   @Transaction()

@@ -10,4 +10,8 @@ import { ConfigService } from './config.service';
   ],
   exports: [ConfigService],
 })
-export class ConfigModule {}
+export class ConfigModule {
+  static getInstance(configPath: string = `${process.env.NODE_ENV || ''}.env`) {
+    return new ConfigService(`${process.env.NODE_ENV || ''}.env`);
+  }
+}

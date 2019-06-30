@@ -2,9 +2,9 @@ import { Column, Entity, JoinColumn, OneToOne, PrimaryColumn } from 'typeorm';
 import { User } from '../user/user.entity';
 import { DatabaseEntity } from '../helpers/miscellaneous/database-entity';
 
-export const DBName = 'user_auth';
+export const TableName = 'user_auth';
 
-@Entity({ name: DBName })
+@Entity({ name: TableName })
 export class UserAuth extends DatabaseEntity {
   constructor(data?: any) {
     super(data, [
