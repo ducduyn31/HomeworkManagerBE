@@ -1,11 +1,10 @@
-import { CreateUserDto } from '../../user/create-user.dto';
+import { CreateUserDto } from '../../user/dtos/create-user.dto';
 import { SqlUnique } from '../../helpers/validators/sql-unique.validator';
 import { TableName as authTableName } from '../auth.entity';
 import { IsString, Length } from 'class-validator';
 
 export class RegisterDto extends CreateUserDto {
-
-  @SqlUnique({ table: authTableName })
+  @SqlUnique(authTableName)
   @Length(8, 20)
   readonly username: string;
 

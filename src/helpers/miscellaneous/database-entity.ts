@@ -1,3 +1,5 @@
+import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
+
 export class DatabaseEntity {
   protected fillables: string[];
   protected forbidden: string[];

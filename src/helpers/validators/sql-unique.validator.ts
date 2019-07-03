@@ -5,7 +5,6 @@ import {
   ValidatorConstraint,
   ValidatorConstraintInterface,
 } from 'class-validator';
-import { SqlAddress } from '../interfaces/sql-address.interface';
 import { getManager } from 'typeorm';
 
 @ValidatorConstraint({ async: true })
@@ -14,7 +13,7 @@ export class SqlUniqueConstraint implements ValidatorConstraintInterface {
     value: any,
     validationArguments?: ValidationArguments,
   ): Promise<boolean> {
-    const tableName = (validationArguments.constraints[0] as SqlAddress).table;
+    const tableName = validationArguments.constraints[0];
     const [_, count] = await getManager().findAndCount(tableName, {
       where: { [validationArguments.property]: value },
     });
@@ -27,7 +26,7 @@ export class SqlUniqueConstraint implements ValidatorConstraintInterface {
 }
 
 export function SqlUnique(
-  location: SqlAddress,
+  tableName: string,
   validationOptions?: ValidationOptions,
 ) {
   return (object, propertyName: string) => {
@@ -35,7 +34,7 @@ export function SqlUnique(
       propertyName,
       target: object.constructor,
       options: validationOptions,
-      constraints: [location],
+      constraints: [tableName],
       validator: SqlUniqueConstraint,
     });
   };

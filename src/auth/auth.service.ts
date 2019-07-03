@@ -33,7 +33,7 @@ export class AuthService {
     };
   }
 
-  async validateUser(loginDto: LoginDto): Promise<any> {
+  async signUser(loginDto: LoginDto): Promise<any> {
     const auth: UserAuth = await this.authRepo.findOneOrFail({
       username: loginDto.username,
     });
@@ -53,7 +53,7 @@ export class AuthService {
     @TransactionManager() manager?: EntityManager,
   ): Promise<IUserAuth> {
     const user: User = await manager.save(
-      this.userService.initUser(registerDto),
+      UserService.initUser(registerDto),
     );
 
     const toSaveUserAuth: UserAuth = new UserAuth({
@@ -67,5 +67,11 @@ export class AuthService {
       user,
       auth: userAuth,
     };
+  }
+
+  async validateUserOrFail(payload: JwtPayload): Promise<User> {
+    const user: User = await this.userService.findById(payload.id);
+    if (!user) { throw new UnauthorizedException(); }
+    return user;
   }
 }
