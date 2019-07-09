@@ -18,4 +18,8 @@ export class ConfigService {
   get jwtKey(): string {
     return this.get('JWT_SECRET');
   }
+
+  get jwtExpiresTime(): number {
+    return +this.get('JWT_EXPIRES');
+  }
 }

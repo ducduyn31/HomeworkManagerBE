@@ -1,7 +1,4 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { UserController } from './user/user.controller';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -18,12 +15,12 @@ import { ConfigModule } from './config/config.module';
       username: 'root',
       password: 'secret',
       database: 'homework',
+      timezone: '+7:00',
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: true,
+      logging: ['error'],
     }),
     ConfigModule,
   ],
-  controllers: [AppController, UserController],
-  providers: [AppService],
 })
 export class AppModule {}

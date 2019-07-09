@@ -1,9 +1,10 @@
 import { IsDateString, IsEmail, IsOptional, Length } from 'class-validator';
-import { SqlUnique } from '../helpers/validators/sql-unique.validator';
+import { SqlUnique } from '../../helpers/validators/sql-unique.validator';
+import { TableName as UserTableName } from '../user.entity';
 
 export class CreateUserDto {
   @IsEmail()
-  @SqlUnique({ table: 'user' })
+  @SqlUnique(UserTableName)
   readonly email: string;
 
   @Length(5, 20)
