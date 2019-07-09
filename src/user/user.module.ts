@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserService } from './user.service';
-import { User } from './user.entity';
 import { UserController } from './user.controller';
 import { PassportModule } from '@nestjs/passport';
+import { SoftDeleteRepository } from '../helpers/traits/soft-delete';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User]),
+    TypeOrmModule.forFeature([SoftDeleteRepository]),
     PassportModule,
   ],
   providers: [UserService],

@@ -1,18 +1,14 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './user.entity';
-import { Repository, UpdateResult } from 'typeorm';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { UpdateUserDto } from './dtos/update-user.dto';
 import { pickProperties } from '../helpers/utils/property-mask';
 import { ColumnMetadata } from 'typeorm/metadata/ColumnMetadata';
+import { SoftDeleteRepository } from '../helpers/traits/soft-delete';
 
 @Injectable()
 export class UserService {
-  constructor(
-    @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
-  ) {}
+  constructor(private readonly userRepository: SoftDeleteRepository<User>) {}
 
   async findById(id: number): Promise<User> {
     return (await this.userRepository.findByIds([id]))[0];
@@ -24,6 +20,14 @@ export class UserService {
       throw new NotFoundException();
     }
     return user;
+  }
+
+  async deleteOrFail(id: number) {
+    const deletedUser = await this.userRepository.delete(id);
+    if (!deletedUser) {
+      throw new NotFoundException();
+    }
+    return deletedUser;
   }
 
   static initUser(createUserDto: CreateUserDto): User {

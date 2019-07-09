@@ -5,10 +5,14 @@ import { User } from '../user/user.entity';
 import { IUserAuth } from '../helpers/interfaces/user-detail.interface';
 import { LoginDto } from './dtos/login.dto';
 import { TokenResponse } from '../helpers/response-mapper/responses/token.response';
+import { ConfigService } from '../config/config.service';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly configService: ConfigService,
+  ) {}
 
   @Post('sign-up')
   async createAuth(@Body() registerDto: RegisterDto): Promise<User> {
@@ -19,11 +23,11 @@ export class AuthController {
 
   @Post('sign-in')
   async signIn(@Body() loginDto: LoginDto): Promise<TokenResponse> {
-    const token =  await this.authService.signUser(loginDto);
+    const token = await this.authService.signUser(loginDto);
     return {
       access_token: token,
       refresh_token: null,
-      expires_in: 3600,
+      expires_in: this.configService.jwtExpiresTime,
     };
   }
 }

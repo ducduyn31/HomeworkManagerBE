@@ -1,8 +1,11 @@
-import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
+import { EntityStatus } from '../constants/entity-status';
 
 export class DatabaseEntity {
   protected fillables: string[];
   protected forbidden: string[];
+
+  public deletedAt: Date;
+  public status: EntityStatus;
 
   constructor(data?: any, fillables?: string[], forbidden?: string[]) {
     this.fillables = fillables || [];

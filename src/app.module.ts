@@ -3,7 +3,6 @@ import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from './config/config.module';
-import { PassportModule } from '@nestjs/passport';
 
 @Module({
   imports: [
@@ -16,8 +15,10 @@ import { PassportModule } from '@nestjs/passport';
       username: 'root',
       password: 'secret',
       database: 'homework',
+      timezone: '+7:00',
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: true,
+      logging: ['error'],
     }),
     ConfigModule,
   ],

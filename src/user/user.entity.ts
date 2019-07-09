@@ -1,9 +1,11 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { DatabaseEntity } from '../helpers/miscellaneous/database-entity';
+import { SoftDelete } from '../helpers/traits/soft-delete';
 
 export const TableName = 'user';
 
 @Entity({ name: TableName })
+@SoftDelete()
 export class User extends DatabaseEntity {
   constructor(data?: any) {
     super(data, [

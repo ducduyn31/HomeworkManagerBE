@@ -1,6 +1,6 @@
 import {
   Body,
-  Controller,
+  Controller, Delete,
   Get,
   HttpCode,
   Param,
@@ -32,5 +32,10 @@ export class UserController {
   @Put(':id')
   async update(@Param('id') id: number, @Body() updateUserDto: UpdateUserDto) {
     return await this.userService.updateUser(id, updateUserDto);
+  }
+
+  @Delete(':id')
+  async remove(@Param('id') id: number) {
+    return await this.userService.deleteOrFail(id);
   }
 }
