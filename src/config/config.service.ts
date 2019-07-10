@@ -22,4 +22,8 @@ export class ConfigService {
   get jwtExpiresTime(): number {
     return +this.get('JWT_EXPIRES');
   }
+
+  get jwtRefreshTokenExpiresTime(): number {
+    return +this.get('JWT_REFRESH_EXPIRES');
+  }
 }
