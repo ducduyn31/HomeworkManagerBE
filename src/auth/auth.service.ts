@@ -1,4 +1,8 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../user/user.service';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -15,6 +19,8 @@ import { RegisterDto } from './dtos/register.dto';
 import { compareSync, hashSync } from 'bcrypt';
 import { LoginDto } from './dtos/login.dto';
 import { JwtPayload } from '../helpers/interfaces/jwt-payload.interface';
+import { JsonWebTokenError } from 'jsonwebtoken';
+import { BlacklistToken } from './blacklist-token.entity';
 
 @Injectable()
 export class AuthService {
@@ -23,6 +29,8 @@ export class AuthService {
     private readonly userService: UserService,
     @InjectRepository(UserAuth)
     private readonly authRepo: Repository<UserAuth>,
+    @InjectRepository(BlacklistToken)
+    private readonly blacklistTokenRepo: Repository<BlacklistToken>,
   ) {}
 
   async findAuthAndUserByEmail(username: string): Promise<IUserAuth> {
@@ -52,9 +60,7 @@ export class AuthService {
     registerDto: RegisterDto,
     @TransactionManager() manager?: EntityManager,
   ): Promise<IUserAuth> {
-    const user: User = await manager.save(
-      UserService.initUser(registerDto),
-    );
+    const user: User = await manager.save(UserService.initUser(registerDto));
 
     const toSaveUserAuth: UserAuth = new UserAuth({
       username: registerDto.username,
@@ -71,7 +77,23 @@ export class AuthService {
 
   async validateUserOrFail(payload: JwtPayload): Promise<User> {
     const user: User = await this.userService.findById(payload.id);
-    if (!user) { throw new UnauthorizedException(); }
+    if (!user) {
+      throw new UnauthorizedException();
+    }
     return user;
+  }
+
+  async invalidateToken(token: string, issuedBy: User) {
+    const payload: JwtPayload = this.jwtService.verify<JwtPayload>(token);
+
+    return this.blacklistTokenRepo.save(
+      new BlacklistToken({
+        token,
+        createdAt: new Date(payload.iat * 1000),
+        expiredAt: new Date(payload.exp * 1000),
+        issuer: issuedBy,
+        target: (payload.id as unknown) as User,
+      }),
+    );
   }
 }

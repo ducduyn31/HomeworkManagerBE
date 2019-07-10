@@ -200,8 +200,8 @@ export class SoftDeleteRepository<
       .createQueryBuilder()
       .update(this.metadata.target)
       .set(partialEntity)
-      .where({ [this.softDeleteColumnKey]: null })
       .whereInIds(criteria)
+      .andWhere({ [this.softDeleteColumnKey]: null } as any)
       .execute();
   }
 
