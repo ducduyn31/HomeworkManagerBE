@@ -9,4 +9,8 @@ export const AuthWhitelist: Array<{ handlerName: string; class: any }> = [
     handlerName: 'createAuth',
     class: AuthController,
   },
+  {
+    handlerName: 'refresh',
+    class: AuthController,
+  },
 ];

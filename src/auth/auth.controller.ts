@@ -33,8 +33,8 @@ export class AuthController {
     const token = await this.authService.signUser(loginDto);
     return {
       access_token: token,
-      refresh_token: null,
       expires_in: this.configService.jwtExpiresTime,
+      refresh_expires_in: this.configService.jwtRefreshTokenExpiresTime,
     };
   }
 
@@ -46,6 +46,24 @@ export class AuthController {
       if (err instanceof JsonWebTokenError) {
         throw new BadRequestException();
       }
+      throw err;
+    }
+  }
+
+  @Post('refresh')
+  async refresh(@Body('access_token') token: string, @Req() req): Promise<TokenResponse> {
+    try {
+      const newToken = await this.authService.refreshToken(token, req.user);
+      return {
+        access_token: newToken,
+        expires_in: this.configService.jwtExpiresTime,
+        refresh_expires_in: this.configService.jwtRefreshTokenExpiresTime,
+      };
+    } catch (err) {
+      if (err instanceof JsonWebTokenError) {
+        throw new BadRequestException();
+      }
+      throw err;
     }
   }
 }
