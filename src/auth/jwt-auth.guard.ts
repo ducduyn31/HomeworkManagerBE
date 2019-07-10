@@ -1,19 +1,24 @@
 import { ExecutionContext, Injectable } from '@nestjs/common';
-import { Observable } from 'rxjs';
+import { isObservable } from 'rxjs';
 import { AuthGuard } from '@nestjs/passport';
+import { ExtractJwt } from 'passport-jwt';
+import { BlacklistToken } from './blacklist-token.entity';
+import { getConnection, Repository } from 'typeorm';
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
   private whitelist: Array<{ handlerName: string; class: any }>;
+  private readonly blacklistTokenRepo: Repository<BlacklistToken>;
 
-  constructor(whitelist?: Array<{ handlerName: string; class: any }>) {
+  constructor(
+    whitelist: Array<{ handlerName: string; class: any }>,
+  ) {
     super('jwt');
     this.whitelist = whitelist || [];
+    this.blacklistTokenRepo = getConnection().getRepository(BlacklistToken);
   }
 
-  canActivate(
-    context: ExecutionContext,
-  ): boolean | Promise<boolean> | Observable<boolean> {
+  async canActivate(context: ExecutionContext): Promise<boolean> {
     if (
       this.whitelist.some(
         whitelistedItem =>
@@ -23,6 +28,22 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     ) {
       return true;
     }
-    return super.canActivate(context);
+
+    const token: string = ExtractJwt.fromAuthHeaderAsBearerToken()(
+      context.switchToHttp().getRequest(),
+    );
+
+    const blacklistToken = await (await this.blacklistTokenRepo).findOne({ token });
+
+    if (!blacklistToken) {
+      const can = super.canActivate(context);
+      if (isObservable(can)) {
+        return can.toPromise();
+      }
+
+      return can;
+    }
+
+    return false;
   }
 }

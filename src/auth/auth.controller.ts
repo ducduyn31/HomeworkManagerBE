@@ -1,4 +1,10 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Post,
+  Req,
+} from '@nestjs/common';
 import { RegisterDto } from './dtos/register.dto';
 import { AuthService } from './auth.service';
 import { User } from '../user/user.entity';
@@ -6,6 +12,7 @@ import { IUserAuth } from '../helpers/interfaces/user-detail.interface';
 import { LoginDto } from './dtos/login.dto';
 import { TokenResponse } from '../helpers/response-mapper/responses/token.response';
 import { ConfigService } from '../config/config.service';
+import { JsonWebTokenError } from 'jsonwebtoken';
 
 @Controller('auth')
 export class AuthController {
@@ -29,5 +36,16 @@ export class AuthController {
       refresh_token: null,
       expires_in: this.configService.jwtExpiresTime,
     };
+  }
+
+  @Post('invalidate')
+  async invalidate(@Body('access_token') token: string, @Req() req) {
+    try {
+      return this.authService.invalidateToken(token, req.user);
+    } catch (err) {
+      if (err instanceof JsonWebTokenError) {
+        throw new BadRequestException();
+      }
+    }
   }
 }

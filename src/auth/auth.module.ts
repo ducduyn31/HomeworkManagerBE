@@ -8,6 +8,7 @@ import { UserModule } from '../user/user.module';
 import { ConfigModule } from '../config/config.module';
 import { AuthController } from './auth.controller';
 import { JwtStrategy } from './strategies/jwt.strategy';
+import { BlacklistToken } from './blacklist-token.entity';
 
 @Module({
   imports: [
@@ -20,7 +21,7 @@ import { JwtStrategy } from './strategies/jwt.strategy';
       },
     }),
     PassportModule.register({ defaultStrategy: 'jwt' }),
-    TypeOrmModule.forFeature([UserAuth]),
+    TypeOrmModule.forFeature([UserAuth, BlacklistToken]),
   ],
   providers: [AuthService, JwtStrategy],
   controllers: [AuthController],

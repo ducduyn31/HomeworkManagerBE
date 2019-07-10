@@ -7,7 +7,7 @@ export const TableName = 'user';
 @Entity({ name: TableName })
 @SoftDelete()
 export class User extends DatabaseEntity {
-  constructor(data?: any) {
+  constructor(data?: { [P in keyof User]?: User[P] }) {
     super(data, [
       'displayName',
       'email',
