@@ -23,11 +23,17 @@ export class UserService {
   }
 
   async deleteOrFail(id: number) {
-    const deletedUser = await this.userRepository.delete(id);
-    if (!deletedUser) {
+    const deleteResult = await this.userRepository.delete(id);
+    const LastCharIndexOfRowsMatched = 14;
+    if (
+      +deleteResult.raw.message.slice(
+        LastCharIndexOfRowsMatched,
+        deleteResult.raw.message.indexOf('Changed:'),
+      ) === 0
+    ) {
       throw new NotFoundException();
     }
-    return deletedUser;
+    return (await this.userRepository.findByIds([id], {}, true))[0];
   }
 
   static initUser(createUserDto: CreateUserDto): User {

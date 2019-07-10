@@ -18,7 +18,7 @@ import { ConfigModule } from './config/config.module';
       timezone: '+7:00',
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: true,
-      logging: ['error'],
+      logging: ['error', 'query'],
     }),
     ConfigModule,
   ],
